@@ -11,7 +11,14 @@
             'icon' => 'fa-solid fa-box-open',
             'route' => route('admin.families.index'),
             'active' => request()->routeIs('admin.families.*')
+        ],
+        [
+            'name' => 'Categorías',
+            'icon' => 'fa-solid fa-tags',
+            'route' => route('admin.categories.index'),
+            'active' => request()->routeIs('admin.categories.*')
         ]
+
     ];
 @endphp
 
