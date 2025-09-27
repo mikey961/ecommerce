@@ -17,7 +17,8 @@
                 </x-label>
                 <x-select name="family_id" class="w-80">
                     @foreach ($families as $family)
-                        <option value="{{ $family->id }}">
+                        <option value="{{ $family->id }}"
+                            @selected(old('family_id') == $family->id)>
                             {{ $family->name }}
                         </option>
                     @endforeach

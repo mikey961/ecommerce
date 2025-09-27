@@ -14,7 +14,9 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::orderBy('id', 'asc')->paginate(50);
+        $categories = Category::orderBy('id', 'asc')
+        ->with('family')
+        ->paginate(50);
         return view('admin.categories.index', compact('categories'));
     }
 
@@ -59,7 +61,8 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        return view('admin.categories.edit');
+        $families = Family::all();
+        return view('admin.categories.edit', compact('category', 'families'));
     }
 
     /**
@@ -67,7 +70,18 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        //
+        $request->validate([
+            'family_id' => 'required|exists:families,id',
+            'name' => 'required'
+        ]);
+
+        $category->update($request->all());
+        session()->flash('swal', [
+            'icon' => 'success',
+            'title' => '¡Bien hecho!',
+            'text' => 'Categoría actualizada con exito'
+        ]);
+        return redirect()->route('admin.categories.index');
     }
 
     /**
@@ -75,6 +89,22 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+        if ($category->subcategories()->count() > 0) {
+            session()->flash('swal', [
+                'icon' => 'error',
+                'title' => '¡Ups!',
+                'text' => 'No se puede eliminar la categoría, porque tiene subcategorías asociadas.'
+            ]);
+            return redirect()->route('admin.categories.edit', $category);
+        }
+
+        $category->delete();
+        session()->flash('swal', [
+            'icon' => 'success',
+            'title' => '¡Bien hecho!',
+            'text' => "La familia {$category->name} se elimino correctamente"
+        ]);
+
+        return redirect()->route('admin.categories.index');
     }
 }
